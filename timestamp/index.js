@@ -25,6 +25,15 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// TO-DO
+// change variables name
+app.get("/api", (req, res) => {
+  const currentDate = new Date();
+  const currentDateUTC = currentDate.toUTCString();
+  const currentDateUNIX = currentDate.valueOf();
+  res.json({ unix : currentDateUNIX, utc: currentDateUTC });
+  return;
+})
 
 app.get("/api/:date?",(req, res) => {
   let dateParams = req.params.date;
@@ -40,7 +49,7 @@ app.get("/api/:date?",(req, res) => {
           // TO-DO
           // change this part of code because it's solution
           // it's hardcoded.
-          const dateConversion = new Date(Date.UTC(dateParamsModify[0], dateParams[1], dateParams[2], 0, 0, 0));
+          const dateConversion = new Date(Date.UTC(dateParamsModify[0], dateParamsModify[1] - 1, dateParamsModify[2], 0, 0, 0));
           const dateConversionUTC = dateConversion.toUTCString()
           const dateConversionUNIX = dateConversion.valueOf()
           //
@@ -57,7 +66,19 @@ app.get("/api/:date?",(req, res) => {
           res.json({ unix: dateParamsUnix, utc: dateConversionUTC.toUTCString() });
           return;
         }
-        break;
+        else { // normal date
+          console.log(dateParams)
+          const dateFromParams = new Date(dateParams);
+          const validDate = dateFromParams.toString();
+          if (validDate === "Invalid Date") {
+            res.json({ error: "Invalid Date" });
+            return;
+          }
+          const dateParamsUnix = dateFromParams.valueOf();
+          const dateParamsUTC = dateFromParams.toUTCString();
+          res.json({ unix: dateParamsUnix, utc: dateParamsUTC });
+          return;
+        }
       case undefined:
       default:
         res.json({ error: "Invalid Date" });
@@ -73,3 +94,4 @@ app.get("/api/:date?",(req, res) => {
 var listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+
